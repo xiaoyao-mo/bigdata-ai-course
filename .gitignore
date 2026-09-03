@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+.venv/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 密钥与敏感信息
+.env
+*.key
+
+# 大数据集（如数据集较大，取消下面注释，避免推送到 GitHub 超限）
+# data/
+# *.csv
+# *.xlsx
