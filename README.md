@@ -17,6 +17,7 @@
 | `data/` | 数据集（大文件建议用网盘或 Git LFS） |
 | `notebooks/` | Jupyter Notebook（`.ipynb`） |
 | `src/` | 可复用的 Python 源码 |
+| `agent-skills/` | AI Agent 相关学习资料（HTML） |
 | `README.md` | 仓库说明 |
 
 ## 作业提交记录
