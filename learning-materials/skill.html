@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概念学习资料 · Skill（技能 / 技能包）</title>
+<style>
+  :root{--ink:#1f2430;--mut:#5c6370;--line:#e3e6ee;--soft:#f6f7fb;--acc:#2f6fed;--accbg:#eaf1fe;--ok:#1d7a4f;--okbg:#e7f6ee;--warn:#a35d00;--warnbg:#fdf3e2;}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f5f9;color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;line-height:1.8;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:34px 20px 70px}
+  header.top{padding:10px 2px 20px}
+  .crumb{font-size:13px;color:var(--mut)}
+  h1{margin:8px 0 6px;font-size:27px;letter-spacing:.5px}
+  .sub{color:var(--mut);font-size:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .tag{background:var(--accbg);color:var(--acc);border-radius:999px;padding:3px 12px;font-size:13px}
+  .tag.soft{background:var(--soft);color:var(--mut)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 24px;margin:16px 0}
+  h2{font-size:19px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+  h2 .no{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:var(--acc);color:#fff;font-size:14px;display:inline-flex;align-items:center;justify-content:center}
+  h3{font-size:16px;margin:16px 0 6px}
+  ul,ol{padding-left:22px;margin:8px 0}
+  li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--soft)}
+  .bigline{font-size:16px;background:var(--soft);border-left:4px solid var(--acc);padding:12px 16px;border-radius:0 10px 10px 0;margin:10px 0}
+  code{background:#eef0f5;border-radius:5px;padding:1px 6px;font-size:13.5px;font-family:"SFMono-Regular",Consolas,"Courier New",monospace}
+  pre{background:#f6f7fb;border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.6}
+  details{border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:8px 0;background:#fbfcfe}
+  summary{cursor:pointer;font-weight:600}
+  details .ans{margin-top:8px;color:#333}
+  .src li{margin:6px 0}
+  .src a{color:var(--acc);word-break:break-all}
+  .src .when{color:var(--mut);font-size:13px}
+  .note{background:var(--okbg);border:1px solid #cfe9da;border-radius:10px;padding:10px 14px;font-size:14px;margin:10px 0}
+  .warn{background:var(--warnbg);border:1px solid #f0dcbc;border-radius:10px;padding:10px 14px;font-size:14px;margin:10px 0}
+  svg{max-width:100%;height:auto}
+  .mono{font-family:"SFMono-Regular",Consolas,monospace;font-size:13.5px}
+  @media(max-width:560px){.wrap{padding:20px 12px 50px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="crumb">学习资料 · 概念 3 / 3</div>
+  <h1>Skill（技能 / 技能包）</h1>
+  <div class="sub">生成方式：concept-explainer Skill · 领域：AI Agent 工程 / WorkBuddy</div>
+  <div class="meta">
+    <span class="tag">Agent Skills</span><span class="tag">SKILL.md</span><span class="tag">可复用知识</span><span class="tag soft">生成日期 2026-09-06</span><span class="tag soft">来源核查 2026-09-06</span>
+  </div>
+</header>
+
+<section class="card">
+  <h2><span class="no">0</span>概念速览卡</h2>
+  <div class="bigline">Skill＝一个<strong>文件夹 + 一个 SKILL.md 文件</strong>：把"完成某类任务的方法"（适用场景、执行步骤、约束、参考资料、脚本）写成 AI 能读懂、能<strong>按需加载</strong>的说明书。它把一次次对话里重复出现的"经验"沉淀为<strong>可复用、可版本管理、可分享</strong>的资产，让通用 AI 快速变成特定领域的"熟手"。</div>
+  <p>一句话为什么重要：模型的能力像"聪明的应届生"，Skill 像"岗位培训手册"——没有手册，每次任务都要从头教；有了手册，经验可以被沉淀、被复用、被团队共享。本作业的 <code>concept-explainer</code> 就是一个项目级 Skill 的实例。</p>
+</section>
+
+<section class="card">
+  <h2><span class="no">1</span>学习目标</h2>
+  <ul>
+    <li>能说清一个 Skill 的文件结构（SKILL.md、frontmatter、可选脚本与资料）。</li>
+    <li>能解释"渐进式披露"为什么是 Skill 的核心设计。</li>
+    <li>能区分 Skill 与提示词、Skill 与 MCP 的边界。</li>
+    <li>能在 WorkBuddy 里说明项目级（<code>.workbuddy/skills/</code>）与用户级 Skill 的差别，并会"调用"一个 Skill。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">2</span>核心问题</h2>
+  <ol>
+    <li>Skill 和一段"写得很好的一次性提示词"到底差在哪？</li>
+    <li>SKILL.md 顶部为什么必须写 name 和 description？</li>
+    <li>Skill 是怎么"进入"模型的？它和上下文是什么关系？</li>
+    <li>什么任务适合沉淀成 Skill？什么情况不适合？</li>
+  </ol>
+</section>
+
+<section class="card">
+  <h2><span class="no">3</span>我的理解</h2>
+  <p>我把 Skill 理解为给 AI 写的<strong>"新员工入职手册"</strong>：通用大模型什么都略懂一点，但没有"我们这行怎么干活"的具体流程。手册（SKILL.md）把流程写清楚，平时放在书架上（不占桌面空间），接到相关任务时再翻出来照着做——这就是我理解的"按需加载 + 渐进式披露"。</p>
+  <p>它和普通提示词最大的区别，我概括为三点：<strong>结构化</strong>（有元数据、有固定章节，能被自动发现与触发）、<strong>工程化</strong>（放在目录里，可随 Git 版本管理、可被项目共享）、<strong>可组合</strong>（多个 Skill 可以叠加，模型按需组合使用）。而一次性的提示词用完即弃、难以复用，更谈不上团队共享。</p>
+  <p>本作业就是一次亲身实践：我（在 AI 协助下）写了 <code>concept-explainer</code> 这个 Skill，再用它生成了本仓库里的概念学习资料——"自己造工具，再用工具干活"，这让我对 Skill 的价值体会很深。</p>
+</section>
+
+<section class="card">
+  <h2><span class="no">4</span>核心机制 / 组成</h2>
+  <h3>一个 Skill 的文件结构（Anthropic 官方定义的标准形态）</h3>
+  <pre><span class="mono">concept-explainer/
+├── SKILL.md          ← 必须存在；顶部是 YAML frontmatter（name + description）
+└── （可选）references/、scripts/ 等子文件，按需加载</span></pre>
+  <p>SKILL.md 的开头形如：</p>
+  <pre><span class="mono">---
+name: concept-explainer
+description: 概念学习资料生成器。当用户要求"学习/讲解某个概念"时使用……
+---
+（正文：适用场景 → 输入要求 → 生成步骤 → 输出结构 → 资料来源与自检要求）</span></pre>
+  <h3>三级"渐进式披露"（Progressive Disclosure）</h3>
+  <p style="text-align:center">
+  <svg viewBox="0 0 600 150" width="600" role="img" aria-label="Skill 三级渐进披露示意">
+    <rect x="10" y="18" width="176" height="110" rx="10" fill="#eaf1fe" stroke="#2f6fed"/>
+    <text x="98" y="42" text-anchor="middle" font-size="13" fill="#1f2430">第 1 级：元数据</text>
+    <text x="98" y="64" text-anchor="middle" font-size="12" fill="#5c6370">name + description</text>
+    <text x="98" y="84" text-anchor="middle" font-size="12" fill="#5c6370">启动时进系统提示</text>
+    <text x="98" y="104" text-anchor="middle" font-size="12" fill="#5c6370">≈ 几十 token</text>
+    <path d="M196 73 h36" stroke="#8a93a6" stroke-width="1.6" fill="none" marker-end="url(#a1)"/>
+    <rect x="242" y="18" width="176" height="110" rx="10" fill="#e7f6ee" stroke="#1d7a4f"/>
+    <text x="330" y="42" text-anchor="middle" font-size="13" fill="#1f2430">第 2 级：SKILL.md 全文</text>
+    <text x="330" y="64" text-anchor="middle" font-size="12" fill="#5c6370">模型判断相关才读取</text>
+    <text x="330" y="84" text-anchor="middle" font-size="12" fill="#5c6370">≈ 数百～数千 token</text>
+    <text x="330" y="104" text-anchor="middle" font-size="12" fill="#5c6370">读入上下文</text>
+    <path d="M428 73 h36" stroke="#8a93a6" stroke-width="1.6" fill="none" marker-end="url(#a1)"/>
+    <rect x="474" y="18" width="116" height="110" rx="10" fill="#fdf3e2" stroke="#a35d00"/>
+    <text x="532" y="42" text-anchor="middle" font-size="13" fill="#1f2430">第 3 级：子文件</text>
+    <text x="532" y="64" text-anchor="middle" font-size="12" fill="#5c6370">references/</text>
+    <text x="532" y="84" text-anchor="middle" font-size="12" fill="#5c6370">scripts/</text>
+    <text x="532" y="104" text-anchor="middle" font-size="12" fill="#5c6370">真正需要才打开</text>
+    <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#8a93a6" stroke-width="1.6"/></marker></defs>
+  </svg>
+  </p>
+  <p class="note">这正是"Skill 与上下文"的接口：<strong>平时只占几十 token 的元数据；触发时才把全文读进上下文</strong>——所以装几十上百个 Skill 也不会撑爆上下文窗口。（呼应概念 2。）</p>
+  <h3>Skill 的两种存放层级（以 WorkBuddy 为例）</h3>
+  <table>
+    <tr><th>层级</th><th>路径</th><th>特点</th></tr>
+    <tr><td>用户级 Skill</td><td><code>~/.workbuddy/skills/</code></td><td>个人所有项目可用</td></tr>
+    <tr><td>项目级 Skill</td><td><code>&lt;仓库&gt;/.workbuddy/skills/</code></td><td>随仓库走、团队共享，可用 Git 管理 —— 本作业采用这一级</td></tr>
+  </table>
+</section>
+
+<section class="card">
+  <h2><span class="no">5</span>应用场景（真实具体）</h2>
+  <ul>
+    <li><strong>本作业实例</strong>：项目级 Skill <code>concept-explainer</code> 位于 <code>.workbuddy/skills/concept-explainer/SKILL.md</code>，能接收任意新概念（Agent、RAG、Transformer……）自动生成结构化学习资料；本仓库三份概念资料与关系文档均由它产出。</li>
+    <li><strong>Anthropic 官方示例</strong>：给 Claude 配 PDF 技能后，它能读取 PDF 并填充表单——SKILL.md 只写"何时用"，表单细节放 <code>forms.md</code>，需要时再读（渐进式披露的典型用法）。</li>
+    <li><strong>团队/组织场景</strong>：把品牌规范、代码规范、报告模板等"程序性知识"沉淀为 Skill 放进仓库，全员共享，随版本迭代。</li>
+    <li><strong>跨平台</strong>：Agent Skills 已成为开放标准（Anthropic 2025-12 发布），同一 Skill 可用于 Claude App、Claude Code、API 等不同环境。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">6</span>易混淆与使用边界</h2>
+  <table>
+    <tr><th>易混淆概念</th><th>区别一句话</th></tr>
+    <tr><td>Skill vs 提示词</td><td>提示词是一次性的对话指令；Skill 是结构化、带元数据、可复用可管理的文件资产（"提示词工程化"）。</td></tr>
+    <tr><td>Skill vs MCP</td><td>MCP 是连接外部工具/数据的<strong>协议</strong>（让 AI 能用某个服务）；Skill 是完成任务方法的<strong>知识包</strong>（教 AI 怎么做）。二者互补：Skill 里的流程可以调用 MCP 工具执行。</td></tr>
+    <tr><td>Skill vs 普通文件夹/文档</td><td>Skill 必须遵循约定（SKILL.md + YAML frontmatter），模型才知道何时加载它；乱放的文档不会被自动发现。</td></tr>
+  </table>
+  <h3>使用边界与注意事项</h3>
+  <ul>
+    <li><strong>依赖运行环境</strong>：Skill 的"自动发现与加载"需要 AI 环境支持（如 WorkBuddy / Claude Code / API 的 Skills 能力）；纯文本对话场景用不了。</li>
+    <li><strong>会占用上下文</strong>：被触发后 SKILL.md 全文进入上下文；写得冗长会浪费 token，应保持精简、按需分层。</li>
+    <li><strong>安全</strong>：Skill 可含可执行脚本，Anthropic 官方提醒"只使用可信来源的 Skill"，避免恶意内容。</li>
+    <li><strong>需要迭代</strong>：Skill 首次编写通常不完美，要通过实际任务测试、修改、再沉淀（这正是本仓库持续迭代的意义）。</li>
+    <li><strong>不是所有任务都适合</strong>：一次性的、变化极大的任务不值得固化成 Skill；适合的是"高频、流程稳定、可复用"的任务。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">7</span>自测问题</h2>
+  <details><summary>1.（单选）一个 Skill 目录中，哪个文件是必须存在的？A. README.md B. SKILL.md C. config.json D. main.py</summary><div class="ans">B。SKILL.md 必须存在，且以 YAML frontmatter（name + description）开头。</div></details>
+  <details><summary>2.（单选）SKILL.md 顶部的 frontmatter 里，哪两个字段是必需的？A. version 和 author B. name 和 description C. tags 和 date</summary><div class="ans">B。name + description 会在启动时预载入系统提示，用于判断何时触发该 Skill。</div></details>
+  <details><summary>3.（判断）Skill 被触发时会把全文一次性塞进上下文；因此装很多 Skill 会立刻撑爆窗口。</summary><div class="ans">错误。平时只载入几十 token 的元数据，只有判断相关时才读全文（渐进式披露），这正是为保护上下文窗口而设计。</div></details>
+  <details><summary>4.（单选）MCP 与 Skill 的关系，最准确的说法是：A. 二者完全相同 B. MCP 是连接外部系统的协议，Skill 是任务方法知识包，可互补使用 C. Skill 是 MCP 的旧名字</summary><div class="ans">B。MCP 解决"能不能连上外部能力"，Skill 解决"知不知道怎么做"。</div></details>
+  <details><summary>5.（判断）项目级 Skill 放在仓库根目录的 .workbuddy/skills/ 下，可随 Git 版本管理与团队共享。</summary><div class="ans">正确。这就是本作业把它放进仓库的原因（用户级则在 ~/.workbuddy/skills/）。</div></details>
+  <details><summary>6.（简答）为什么说 Skill 是"提示词的工程化"？</summary><div class="ans">因为 Skill 把经验写成带元数据、有固定结构、按需加载、可版本管理、可分享的文件，而不是散落在对话里的一次性文本。</div></details>
+  <details><summary>7.（判断）Skill 只要写得好，任何环境都能自动触发。</summary><div class="ans">错误。触发依赖 AI 环境对 Skills 的支持（自动扫描/描述匹配）；且模型需具备读文件等能力才能加载内容。</div></details>
+  <details><summary>8.（简答）你有一个每周都要做的固定流程任务，值不值得做成 Skill？为什么？</summary><div class="ans">值得。高频、流程稳定、可复用正是 Skill 的最佳场景；做成 Skill 后每次不用重复写要求，还能随实践迭代改进。（开放题，合理即可）</div></details>
+</section>
+
+<section class="card">
+  <h2><span class="no">8</span>参考资料（可核查）</h2>
+  <ol class="src">
+    <li>Anthropic Engineering — <em>Equipping agents for the real world with Agent Skills</em>（SKILL.md 解剖、渐进式披露、Skill 与上下文窗口、可含脚本）<br>https://anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills <span class="when">｜检索：2026-09-06 ✅</span></li>
+    <li>Anthropic News — <em>Introducing Agent Skills</em>（技能特性：可组合/可移植/高效，开放标准与安全提醒）<br>https://www.anthropic.com/news/skills <span class="when">｜检索：2026-09-06 ✅</span></li>
+    <li>Anthropic Console 文档（中文）— <em>Agent Skills Overview</em><br>https://console.anthropic.com/docs/zh-CN/agents-and-tools/agent-skills/overview <span class="when">｜检索：2026-09-06 ✅</span></li>
+    <li>WorkBuddy 官方文档 — Overview（本项目级 Skill 存放约定与调用方式以官方文档为准）<br>https://www.workbuddy.cn/docs/workbuddy/Overview <span class="when">｜检索：2026-09-06 ✅</span></li>
+  </ol>
+  <div class="note">核查记录：2026-09-06 检索确认以上链接可访问；"SKILL.md 必需 frontmatter（name+description）""渐进式披露三级结构""开放标准（2025-12）""只信任来源可信的 Skill"等论断均与 Anthropic 原文一致。</div>
+  <p class="warn">人工复核提醒：① Skill 在不同产品的路径约定可能略有差异（Claude Code 为 ~/.claude/skills 等），本文以 WorkBuddy 约定为主；② 请对照 WorkBuddy 官方文档确认"项目级/用户级"路径无误后再提交。</p>
+</section>
+
+</div>
+</body>
+</html>

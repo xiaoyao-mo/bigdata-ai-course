@@ -19,7 +19,18 @@ Thumbs.db
 
 # 密钥与敏感信息
 .env
+.env.*
+!.env.example
 *.key
+*.pem
+*.p12
+*.token
+*.secret
+secrets.*
+credentials.*
+id_rsa
+id_rsa.pub
+*.local
 
 # 大数据集（如数据集较大，取消下面注释，避免推送到 GitHub 超限）
 # data/

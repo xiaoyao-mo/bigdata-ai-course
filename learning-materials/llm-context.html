@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概念学习资料 · 大模型的上下文（Context）</title>
+<style>
+  :root{--ink:#1f2430;--mut:#5c6370;--line:#e3e6ee;--soft:#f6f7fb;--acc:#2f6fed;--accbg:#eaf1fe;--ok:#1d7a4f;--okbg:#e7f6ee;--warn:#a35d00;--warnbg:#fdf3e2;}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f5f9;color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;line-height:1.8;font-size:15px}
+  .wrap{max-width:880px;margin:0 auto;padding:34px 20px 70px}
+  header.top{padding:10px 2px 20px}
+  .crumb{font-size:13px;color:var(--mut)}
+  h1{margin:8px 0 6px;font-size:27px;letter-spacing:.5px}
+  .sub{color:var(--mut);font-size:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .tag{background:var(--accbg);color:var(--acc);border-radius:999px;padding:3px 12px;font-size:13px}
+  .tag.soft{background:var(--soft);color:var(--mut)}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 24px;margin:16px 0}
+  h2{font-size:19px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+  h2 .no{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:var(--acc);color:#fff;font-size:14px;display:inline-flex;align-items:center;justify-content:center}
+  h3{font-size:16px;margin:16px 0 6px}
+  ul,ol{padding-left:22px;margin:8px 0}
+  li{margin:4px 0}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--soft)}
+  .bigline{font-size:16px;background:var(--soft);border-left:4px solid var(--acc);padding:12px 16px;border-radius:0 10px 10px 0;margin:10px 0}
+  details{border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:8px 0;background:#fbfcfe}
+  summary{cursor:pointer;font-weight:600}
+  details .ans{margin-top:8px;color:#333}
+  .src li{margin:6px 0}
+  .src a{color:var(--acc);word-break:break-all}
+  .src .when{color:var(--mut);font-size:13px}
+  .note{background:var(--okbg);border:1px solid #cfe9da;border-radius:10px;padding:10px 14px;font-size:14px;margin:10px 0}
+  .warn{background:var(--warnbg);border:1px solid #f0dcbc;border-radius:10px;padding:10px 14px;font-size:14px;margin:10px 0}
+  svg{max-width:100%;height:auto}
+  @media(max-width:560px){.wrap{padding:20px 12px 50px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="crumb">学习资料 · 概念 2 / 3</div>
+  <h1>大模型的上下文（LLM Context）</h1>
+  <div class="sub">生成方式：concept-explainer Skill · 领域：大语言模型 / Transformer</div>
+  <div class="meta">
+    <span class="tag">上下文窗口</span><span class="tag">Attention</span><span class="tag soft">生成日期 2026-09-06</span><span class="tag soft">来源核查 2026-09-06</span>
+  </div>
+</header>
+
+<section class="card">
+  <h2><span class="no">0</span>概念速览卡</h2>
+  <div class="bigline">大模型的"上下文"＝模型生成下一段内容时<strong>眼前能看到的所有输入</strong>（系统提示、用户问题、历史对话、工具返回、检索资料等，全部被切成 token）。它能容纳的上限叫<strong>上下文窗口（Context Window）</strong>。模型本身没有持久记忆，一次请求结束就"失忆"——<strong>上下文就是它唯一的临时工作台</strong>。</div>
+  <p>一句话为什么重要：模型表现好不好，很大程度上取决于你往它的上下文里放了什么、怎么放——这是提示词工程、RAG 和 Agent 设计的共同地基。</p>
+</section>
+
+<section class="card">
+  <h2><span class="no">1</span>学习目标</h2>
+  <ul>
+    <li>能说出"上下文"包含哪几类内容，以及"上下文窗口"的限制来自哪里。</li>
+    <li>能解释为什么"多轮对话记得住"是一种错觉，以及 Agent 如何靠上下文维持状态。</li>
+    <li>能说明"窗口很大"≠"都能用好"（知道 Lost in the Middle 现象）。</li>
+    <li>能针对超长内容给出至少两种上下文管理策略。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">2</span>核心问题</h2>
+  <ol>
+    <li>模型推理时到底"看到"了什么？哪些东西占上下文？</li>
+    <li>窗口为什么会有限？算力、成本卡在哪？</li>
+    <li>为什么说大模型无状态？那"记忆"是怎么来的？</li>
+    <li>长上下文里信息放中间为什么容易"丢"？</li>
+  </ol>
+</section>
+
+<section class="card">
+  <h2><span class="no">3</span>我的理解</h2>
+  <p>我把上下文比作模型面前的<strong>一张工作台</strong>：桌面上能摊开的东西（token）有数量上限——这就是"窗口"；摊不开的旧文件要么扔掉（截断）、要么压成摘要再放上去。模型每一次"下笔"前，都要扫一遍整张桌面来决定写什么，所以<strong>桌面上信息的摆放位置和清晰度直接影响它写得好不好</strong>。</p>
+  <p>最容易误解的一点是"记忆"：聊天时模型好像记得我之前说过什么，其实它只是把历史对话<strong>原样放回上下文</strong>再推理一次。换一个全新会话，它什么都不记得。所以真正能跨会话存在的记忆，必须靠外部存储（数据库、向量库）+ 检索，再<strong>读进上下文</strong>才生效。</p>
+  <p>个人补充：读《Lost in the Middle》后我很受触动——模型对长上下文的使用不是"雨露均沾"，而是对开头、结尾更敏感（像人记会议发言的首因/近因效应）。这让我在做提示词和 RAG 时，会特意把<strong>最重要的信息放在开头或结尾</strong>，而不是随便往中间堆。</p>
+</section>
+
+<section class="card">
+  <h2><span class="no">4</span>核心机制 / 组成</h2>
+  <h3>上下文里有什么（一次请求的典型构成）</h3>
+  <p style="text-align:center">
+  <svg viewBox="0 0 640 64" width="640" role="img" aria-label="上下文窗口构成示意">
+    <rect x="0" y="16" width="620" height="34" rx="8" fill="#f6f7fb" stroke="#c9cedb"/>
+    <text x="6" y="13" font-size="12" fill="#5c6370">上下文窗口（一次请求可容纳的全部 token）</text>
+    <rect x="8" y="22" width="120" height="22" rx="6" fill="#eaf1fe" stroke="#2f6fed"/>
+    <text x="68" y="37" text-anchor="middle" font-size="12" fill="#1f2430">系统提示 / Skill</text>
+    <rect x="136" y="22" width="150" height="22" rx="6" fill="#fde7e7" stroke="#d64545"/>
+    <text x="211" y="37" text-anchor="middle" font-size="12" fill="#1f2430">历史对话（多轮记忆）</text>
+    <rect x="294" y="22" width="150" height="22" rx="6" fill="#e7f6ee" stroke="#1d7a4f"/>
+    <text x="369" y="37" text-anchor="middle" font-size="12" fill="#1f2430">检索资料 / 工具返回</text>
+    <rect x="452" y="22" width="160" height="22" rx="6" fill="#fdf3e2" stroke="#a35d00"/>
+    <text x="532" y="37" text-anchor="middle" font-size="12" fill="#1f2430">用户最新问题</text>
+  </svg>
+  </p>
+  <h3>底层机制：Transformer 自注意力（Self-Attention）</h3>
+  <ul>
+    <li>生成每个新 token 时，模型与<strong>窗口内所有已有 token</strong> 计算注意力，决定"该参考谁"——这是它能利用长距离信息的根本原因（Vaswani et al., 2017）。</li>
+    <li>代价：自注意力的时间与内存复杂度随输入长度近似<strong>平方增长</strong>，窗口因此天然有限；工程上用 KV Cache、FlashAttention 等优化来"省钱"。</li>
+    <li>模型的 API 是<strong>无状态</strong>的：每次调用独立；"多轮记忆"是把历史拼进上下文（如上图红色部分）。</li>
+  </ul>
+  <h3>窗口用得好不好：Lost in the Middle（迷失在中间）</h3>
+  <p>Liu et al.（2023）实验发现：当相关信息位于长上下文的<strong>开头或结尾</strong>时，模型表现最好；位于<strong>中间</strong>时准确率显著下降，呈现 U 型曲线；且上下文越长、中间部分越容易"被忽略"，堆更多检索文档的边际收益很小。</p>
+  <p style="text-align:center">
+  <svg viewBox="0 0 420 150" width="420" role="img" aria-label="U型性能曲线示意">
+    <line x1="30" y1="130" x2="400" y2="130" stroke="#8a93a6"/>
+    <line x1="30" y1="10" x2="30" y2="130" stroke="#8a93a6"/>
+    <text x="16" y="18" font-size="12" fill="#5c6370">高</text>
+    <text x="16" y="128" font-size="12" fill="#5c6370">低</text>
+    <text x="215" y="145" text-anchor="middle" font-size="12" fill="#5c6370">相关信息在上下文中的位置 →</text>
+    <path d="M45 30 Q120 100 210 102 Q300 104 375 34" stroke="#2f6fed" stroke-width="3" fill="none"/>
+    <text x="45" y="24" text-anchor="middle" font-size="12" fill="#2f6fed">开头(好)</text>
+    <text x="210" y="118" text-anchor="middle" font-size="12" fill="#d64545">中间(差)</text>
+    <text x="375" y="24" text-anchor="middle" font-size="12" fill="#2f6fed">结尾(好)</text>
+  </svg>
+  </p>
+</section>
+
+<section class="card">
+  <h2><span class="no">5</span>应用场景（真实具体）</h2>
+  <ul>
+    <li><strong>长文档问答</strong>：把论文/合同/手册放进上下文直接提问。文档超过窗口时，先分块检索（RAG），只把相关片段放进上下文。</li>
+    <li><strong>RAG（检索增强生成）</strong>：检索 → 把 Top-K 结果 + 问题拼进上下文 → 模型基于材料回答。注意：K 不宜过大，相关文档尽量放靠前/靠后位置。</li>
+    <li><strong>Agent 多轮工具调用</strong>：上一步工具返回的结果放回上下文，模型"看着结果"决定下一步（与《Agent》资料中的循环呼应）；长任务需要定期把历史"压成摘要"再继续。</li>
+    <li><strong>会话式应用</strong>：客服/学习助手等把多轮历史带入上下文维持"连贯感"，并控制历史长度或做截断策略。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">6</span>易混淆与使用边界</h2>
+  <table>
+    <tr><th>易混淆说法</th><th>澄清</th></tr>
+    <tr><td>"模型有记忆"</td><td>模型无状态；记得住是因为历史被放进上下文。关掉会话/超出窗口即"遗忘"。</td></tr>
+    <tr><td>"上下文窗口越大＝越好用"</td><td>窗口是"能装多少"；Lost in the Middle 说明"用好多少"是另一回事，中间信息仍易被忽略。</td></tr>
+    <tr><td>"把整本资料都塞进去最保险"</td><td>上下文要按 token 计费，还会拖慢推理、稀释注意力；应精选与压缩。</td></tr>
+    <tr><td>"上下文 = 长期记忆 = 模型学到的东西"</td><td>都不是。模型"学到的东西"在参数里（训练得到），上下文是请求级的临时输入，两者完全不同。</td></tr>
+  </table>
+  <h3>使用边界</h3>
+  <ul>
+    <li><strong>成本与延迟</strong>：上下文越长，token 费用与 KV 缓存开销越高；要控制单次请求长度。</li>
+    <li><strong>关键信息放首尾</strong>：依据 U 型曲线，最重要的约束/问题放开头或结尾附近，避免埋在中间。</li>
+    <li><strong>重锚（Re-anchoring）</strong>：长对话中关键状态（订单号、用户要求）应周期性重申，别指望模型"自动一直记得"。</li>
+    <li><strong>隐私与合规</strong>：塞进上下文的数据会随请求发给模型服务方；敏感信息需脱敏、最小化，不要把密钥/隐私写进上下文或提示词文件。</li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2><span class="no">7</span>自测问题</h2>
+  <details><summary>1.（多选）一次大模型请求的上下文可能包含：A. 系统提示 B. 多轮历史对话 C. 工具调用返回 D. 检索到的文档片段</summary><div class="ans">A、B、C、D。它们都会被切成 token 一起参与推理。</div></details>
+  <details><summary>2.（判断）大模型具有持久的长期记忆，所以换新会话它仍记得你。</summary><div class="ans">错误。模型无状态；跨会话记忆要靠外部存储+检索，再放回上下文使用。</div></details>
+  <details><summary>3.（单选）Transformer 自注意力机制的意义是：A. 让模型记住所有历史会话 B. 让模型生成每个词时可参考窗口内的其他词 C. 替代所有外部存储 D. 压缩视频</summary><div class="ans">B。自注意力让新 token 与窗口内已有 token 交互，是长程利用的基础；复杂度随长度平方增长，也限制了窗口大小。</div></details>
+  <details><summary>4.（判断）Lost in the Middle 告诉我们：相关信息放在长上下文中间时，模型往往表现得比放开头/结尾差。</summary><div class="ans">正确。这是 U 型曲线现象（Liu et al., 2023）。</div></details>
+  <details><summary>5.（简答）为什么"把 50 篇文档都塞进上下文"常常不如"精选 5 篇放对位置"？</summary><div class="ans">一是成本（token 计费、KV 缓存）上升；二是注意力被稀释、中间信息易丢失，边际收益很小（论文里 20→50 篇只提升约 1.5%）。</div></details>
+  <details><summary>6.（简答）Agent 长任务执行到一半，如何防止历史把窗口撑爆？</summary><div class="ans">把已完成的历史压成摘要、丢弃次要细节，或把长内容移到外部存储按需检索，只保留关键状态在上下文（可配合"重锚"）。</div></details>
+  <details><summary>7.（单选）"模型参数里学的知识"和"上下文里的信息"的关系是：A. 一样 B. 前者是训练得到的长期知识，后者是请求级的临时输入 C. 上下文会永久改变参数</summary><div class="ans">B。上下文不会修改模型参数（除少数的持续学习/微调场景外，那不是"上下文"的职责）。</div></details>
+  <details><summary>8.（简答）给一个你自己的小技巧：如何摆放一次 RAG 问答的上下文？</summary><div class="ans">示例：系统提示与任务目标置前，最相关的 3~5 段材料紧跟其后，问题放最后，并注明"只依据材料回答"；避免把大段无关内容塞中间。（自测开放题，符合原理即可）</div></details>
+</section>
+
+<section class="card">
+  <h2><span class="no">8</span>参考资料（可核查）</h2>
+  <ol class="src">
+    <li>Nelson F. Liu et al. — <em>Lost in the Middle: How Language Models Use Long Contexts</em>, arXiv:2307.03172（U 型曲线 / 中间信息易丢失 / 检索边际收益）<br>https://arxiv.org/abs/2307.03172 <span class="when">｜检索：2026-09-06 ✅</span></li>
+    <li>Ashish Vaswani et al. — <em>Attention Is All You Need</em>, arXiv:1706.03762（Transformer 与自注意力机制，本文"底层机制"依据）<br>https://arxiv.org/abs/1706.03762 <span class="when">｜检索：2026-09-06 ✅</span></li>
+    <li>Anthropic — <em>Equipping agents for the real world with Agent Skills</em>（含 "Skills and the context window" 一节，展示 Skill 如何进出上下文，作关联阅读）<br>https://anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills <span class="when">｜检索：2026-09-06 ✅</span></li>
+  </ol>
+  <div class="note">核查记录：2026-09-06 经网络检索确认上述论文/文章存在且可访问；U 型曲线、KV Cache/FlashAttention、无状态 API 等表述与原文一致。</div>
+  <p class="warn">人工复核提醒：① "上下文窗口随产品迭代会变化（如 Claude 早期 8K→100K，现已有更大窗口）"，具体数值请以你所用模型官方页面为准；② 请结合课堂对"注意力机制"的讲解核对第 4 节表述。</p>
+</section>
+
+</div>
+</body>
+</html>
